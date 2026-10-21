@@ -157,16 +157,42 @@ $dataFile = Join-Path $executables 'data.properties'
 $pwsh = Join-Path $env:LOCALAPPDATA 'Microsoft\WindowsApps\pwsh.exe'
 # java properties files escape a backslash and a colon
 $escaped = $pwsh.Replace('\', '\\').Replace(':', '\:')
-$entry = [string[]]@('0.Name=PowerShell 7', "0.Path=$escaped", '0.Args=-NoLogo', '0.Translate=false')
+$pwshEntry = [ordered]@{ Name = 'PowerShell 7'; Path = $escaped; Args = '-NoLogo'; Translate = 'false' }
 New-Item -ItemType Directory -Force $executables | Out-Null
 $current = if (Test-Path $dataFile) { [IO.File]::ReadAllLines($dataFile) } else { @() }
-if (($current -join "`n") -cne ($entry -join "`n")) {
+
+# each shell is a group of <index>.<field>=<value> lines. the shells already listed (Git Bash or a
+# WSL distribution, say) are kept with every field; PowerShell 7 goes first and the rest move down
+$other = [Collections.Generic.List[string]]::new()
+$groups = [Collections.Generic.SortedDictionary[int, object]]::new()
+foreach ($line in $current) {
+    if ($line -match '^(\d+)\.([^=]+)=(.*)$') {
+        $index = [int]$Matches[1]
+        if (-not $groups.ContainsKey($index)) { $groups[$index] = [ordered]@{} }
+        $groups[$index][$Matches[2]] = $Matches[3]
+    } else {
+        $other.Add($line)
+    }
+}
+$hasPwsh = $false
+foreach ($group in $groups.Values) {
+    if ($group['Name'] -eq 'PowerShell 7') { $hasPwsh = $true }
+}
+if ($hasPwsh) {
+    Write-Output '  unchanged  Terminal view  PowerShell 7'
+} else {
     if ($current.Count -gt 0) {
         Copy-Item $dataFile "$dataFile.backup-$stamp"
         Write-Output "Backed up $dataFile"
     }
-    [IO.File]::WriteAllLines($dataFile, $entry)
-    Write-Output '  added      Terminal view  PowerShell 7'
+    $lines = [Collections.Generic.List[string]]::new()
+    foreach ($line in $other) { $lines.Add($line) }
+    $shells = @($pwshEntry) + @($groups.Values)
+    for ($i = 0; $i -lt $shells.Count; $i++) {
+        foreach ($field in $shells[$i].Keys) { $lines.Add("$i.$field=$($shells[$i][$field])") }
+    }
+    [IO.File]::WriteAllLines($dataFile, $lines.ToArray())
+    Write-Output '  added      Terminal view  PowerShell 7, first in the list'
 }
 
 Write-Output 'Done. Start Eclipse to pick up the changes.'

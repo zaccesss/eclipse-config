@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- `apply.ps1` merges PowerShell 7 into the Terminal view's list of local shells instead of replacing the list. Existing shells keep every field and move down one place behind it. A list that already has PowerShell 7 is left alone
+
 ### Added
 
 - Initial release: `prefs/` fragments for Java 25 compiler compliance with `--release`, autosave

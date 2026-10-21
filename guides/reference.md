@@ -110,4 +110,4 @@ On macOS, `e4-dark_mac.css` draws yellow and cyan frames around views and editor
 
 ## Terminal view
 
-On Windows the plain terminal button always starts `ComSpec`, which is Command Prompt. `apply.ps1` adds PowerShell 7 to the list of local shells in `<workspace>\.metadata\.plugins\org.eclipse.terminal.view.ui\.executables\data.properties`, so it is picked from the button's dropdown.
+On Windows the plain terminal button always starts `ComSpec`, which is Command Prompt. `apply.ps1` adds PowerShell 7 to the list of local shells in `<workspace>\.metadata\.plugins\org.eclipse.terminal.view.ui\.executables\data.properties`, so it is picked from the button's dropdown. Shells already in that list, such as Git Bash or a WSL distribution, keep every field and move down behind it. A list that already has PowerShell 7 is left alone.
