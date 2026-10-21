@@ -1,0 +1,127 @@
+# Setup
+
+## 1. Install the JDK and Eclipse
+
+The preferences target Java SE 25, so install Eclipse Temurin 25.
+
+macOS (Homebrew):
+
+```bash
+brew install --cask temurin@25
+brew install --cask eclipse-java
+```
+
+Windows:
+
+```powershell
+winget install --id EclipseAdoptium.Temurin.25.JDK --exact
+```
+
+Linux (Fedora, from Adoptium's own RPM repository as its
+[Linux install page](https://adoptium.net/installation/linux/) gives it):
+
+```bash
+sudo tee /etc/yum.repos.d/adoptium.repo > /dev/null <<'REPO'
+[Adoptium]
+name=Adoptium
+baseurl=https://packages.adoptium.net/artifactory/rpm/fedora/$releasever/$basearch
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.adoptium.net/artifactory/api/gpg/key/public
+REPO
+sudo dnf install temurin-25-jdk
+```
+
+On Windows and Linux, download **Eclipse IDE for Java Developers** from
+[eclipse.org/downloads](https://www.eclipse.org/downloads/packages/).
+
+## 2. Open the workspace once
+
+Start Eclipse, choose the workspace folder and quit it again. That creates the workspace's
+`.metadata` folder, which the merge script needs. It refuses to run on a folder without one, so a
+typo never creates a stray workspace.
+
+| Platform | Default workspace |
+| --- | --- |
+| macOS | `~/eclipse-workspace` |
+| Linux | `~/eclipse-workspace` |
+| Windows | `%USERPROFILE%\eclipse-workspace` |
+
+## 3. Clone
+
+```bash
+git clone https://github.com/zaccesss/eclipse-config.git ~/.eclipse-config-src
+```
+
+## 4. Merge the preferences
+
+Quit Eclipse first, then on macOS or Linux:
+
+```bash
+~/.eclipse-config-src/apply.sh                 # the default workspace
+~/.eclipse-config-src/apply.sh ~/some-other-ws # any other workspace
+```
+
+On Windows, from PowerShell 7:
+
+```powershell
+pwsh -File "$HOME\.eclipse-config-src\apply.ps1"
+pwsh -File "$HOME\.eclipse-config-src\apply.ps1" -Workspace D:\some-other-ws
+```
+
+> [!NOTE]
+> Windows PowerShell 5.1 refuses to run any script under its default execution policy, so use
+> PowerShell 7 (`winget install Microsoft.PowerShell`).
+
+The script:
+
+1. refuses to run while a process called `eclipse` is open
+2. copies the workspace's whole `.settings` folder to `.settings.backup-<date>-<time>` beside it
+3. for each fragment in [`prefs/`](../prefs/), replaces the matching key in the workspace file or
+   adds it at the end, leaving every other line as it was
+4. prints each key as `added`, `changed` or `unchanged`
+
+Running it again changes nothing and prints every key as `unchanged`.
+
+> [!WARNING]
+> The key bindings are stored as one value, so merging them replaces any binding already added by
+> hand in that workspace. The backup keeps the old value.
+
+## 5. Set the editor font
+
+The scripts leave the font alone, since Eclipse stores it in a platform-specific form. Set it once:
+
+1. Open **Window > Preferences** (**Eclipse > Settings** on macOS), then
+   **General > Appearance > Colors and Fonts**.
+2. Expand **Basic**, select **Text Font** and click **Edit**.
+3. Pick a monospaced font at a size that reads comfortably and click **Apply and Close**.
+
+The Java editor font follows **Text Font** unless it has been changed on its own.
+
+## 6. Pick the default JRE
+
+Open **Java > Installed JREs** in the preferences. Tick the Temurin 25 entry. If it is missing,
+click **Search** and point it at the JDK folder.
+
+## 7. Install the plugins
+
+For each line in [`plugins.txt`](../plugins.txt), open **Help > Install New Software**, paste the
+update site into **Work with** and follow the wizard. Or open **Help > Eclipse Marketplace** and
+search for the plugin's name.
+
+## Verify it worked
+
+1. `Cmd+P` (`Ctrl+P` on Windows and Linux) opens **Open Resource**.
+2. `Cmd+Shift+P` (`Ctrl+Shift+P`) opens quick access, also inside a Java file.
+3. **Java > Compiler** in the preferences shows compliance level 25 with **Use '--release' option**
+   ticked.
+4. **General > Editors > Autosave** shows autosave turned on with an interval of 20 seconds.
+
+## Updating after a change to this repo
+
+```bash
+cd ~/.eclipse-config-src
+git pull
+```
+
+Then quit Eclipse and repeat step 4.

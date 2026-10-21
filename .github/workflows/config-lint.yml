@@ -1,0 +1,112 @@
+name: Config Lint
+
+# eclipse reads each .prefs file as java properties, so every fragment line must
+# be a # note or key=value. apply.ps1 is only parsed here, since it reads the
+# same fragments as apply.sh, which is run for real.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Validate preferences and merge scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Check every fragment and the key binding XML
+        run: |
+          python3 - <<'PYEOF'
+          import glob, os, re, sys
+          import xml.etree.ElementTree as ET
+
+          bad = 0
+          keys = {}
+          for path in sorted(glob.glob("prefs/*.prefs")):
+              target = os.path.basename(path)
+              for n, line in enumerate(open(path).read().splitlines(), 1):
+                  if not line.strip() or line.lstrip().startswith("#"):
+                      continue
+                  if not re.match(r"^[A-Za-z0-9_.\-/]+=", line):
+                      print(f"::error file={path},line={n}::not a # note or key=value line")
+                      bad = 1
+                      continue
+                  key = line.split("=", 1)[0]
+                  # a repeated key would make the result depend on line order
+                  seen = keys.setdefault((target, key), path)
+                  if seen != path:
+                      print(f"::error file={path},line={n}::{key} is also set in {seen}")
+                      bad = 1
+                  if key == "org.eclipse.ui.commands":
+                      xml = line.split("=", 1)[1].replace("\\n", "\n").replace("\\=", "=")
+                      root = ET.fromstring(xml)
+                      count = len(root.findall("keyBinding"))
+                      print(f"{path}: {count} key bindings")
+                      if count != 15:
+                          print(f"::error file={path},line={n}::expected 15 key bindings, found {count}")
+                          bad = 1
+          sys.exit(bad)
+          PYEOF
+
+      - name: Shellcheck the merge script
+        run: shellcheck apply.sh
+
+      - name: Check every plugins.txt line
+        run: |
+          hit=0
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            case "$line" in
+              //*) continue ;;
+              *" | https://"*) continue ;;
+              *)
+                echo "::error file=plugins.txt::malformed line: $line"
+                hit=1
+                ;;
+            esac
+          done < plugins.txt
+          exit "$hit"
+
+      - name: Run the merge twice on a throwaway workspace
+        run: |
+          ws="$RUNNER_TEMP/ws"
+          settings="$ws/.metadata/.plugins/org.eclipse.core.runtime/.settings"
+          mkdir -p "$settings"
+          printf 'eclipse.preferences.version=1\ntabWidth=8\nunrelated=kept\n' > "$settings/org.eclipse.ui.editors.prefs"
+          ./apply.sh "$ws"
+          # every fragment line must now be present verbatim, the unrelated key kept
+          # and the old tabWidth replaced rather than duplicated
+          for f in prefs/*.prefs; do
+            grep -v '^[[:space:]]*#' "$f" | grep -v '^[[:space:]]*$' | while IFS= read -r line; do
+              grep -qxF -- "$line" "$settings/$(basename "$f")" || { echo "::error::missing in $(basename "$f"): ${line%%=*}"; exit 1; }
+            done
+          done
+          grep -qx 'unrelated=kept' "$settings/org.eclipse.ui.editors.prefs"
+          [ "$(grep -c '^tabWidth=' "$settings/org.eclipse.ui.editors.prefs")" = 1 ]
+          cp -R "$settings" "$RUNNER_TEMP/after-first"
+          ./apply.sh "$ws" 2>&1 | tee "$RUNNER_TEMP/second.log"
+          diff -r "$RUNNER_TEMP/after-first" "$settings"
+          if grep -Eq '^  (added|changed) ' "$RUNNER_TEMP/second.log"; then
+            echo "::error::second run was not a no-op"
+            exit 1
+          fi
+
+      - name: Parse the PowerShell merge script
+        shell: pwsh
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD/apply.ps1", [ref]$null, [ref]$errors) | Out-Null
+          if ($errors.Count) { $errors | ForEach-Object { Write-Output "::error file=apply.ps1::$($_.Message)" }; exit 1 }
+          Write-Output 'apply.ps1 parses'
