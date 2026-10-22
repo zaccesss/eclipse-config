@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The apply scripts no longer back up the workspace's `.settings` folder on every run. On Windows
+  the Terminal view's shell list is no longer copied either. The repo holds every value they write
+  and every other key is left as it was. CI checks nothing is left beside `.settings`.
+
 ### Added
 
 - Screenshots of the editor in the Zacess themes, dark and light.

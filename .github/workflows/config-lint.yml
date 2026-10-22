@@ -86,6 +86,8 @@ jobs:
           mkdir -p "$settings"
           printf 'eclipse.preferences.version=1\ntabWidth=8\nunrelated=kept\n' > "$settings/org.eclipse.ui.editors.prefs"
           ./apply.sh "$ws"
+          # nothing is backed up, so the settings folder must be the only thing beside it
+          [ "$(ls -A "$ws/.metadata/.plugins/org.eclipse.core.runtime")" = .settings ] || { echo "::error::the merge left something beside .settings"; exit 1; }
           # every fragment line must now be present verbatim, the unrelated key kept
           # and the old tabWidth replaced rather than duplicated
           for f in prefs/*.prefs; do

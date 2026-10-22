@@ -76,16 +76,16 @@ pwsh -File "$HOME\.eclipse-config-src\apply.ps1" -Workspace D:\some-other-ws
 The script:
 
 1. refuses to run while a process called `eclipse` is open
-2. copies the workspace's whole `.settings` folder to `.settings.backup-<date>-<time>` beside it
-3. for each fragment in [`prefs/`](../prefs/), replaces the matching key in the workspace file or
+2. for each fragment in [`prefs/`](../prefs/), replaces the matching key in the workspace file or
    adds it at the end, leaving every other line as it was
-4. prints each key as `added`, `changed` or `unchanged`
+3. prints each key as `added`, `changed` or `unchanged`
 
-Running it again changes nothing and prints every key as `unchanged`.
+Running it again changes nothing and prints every key as `unchanged`. Nothing is backed up: the
+repo holds every value the script writes.
 
 > [!WARNING]
 > The key bindings are stored as one value, so merging them replaces any binding already added by
-> hand in that workspace. The backup keeps the old value.
+> hand in that workspace. Copy any binding worth keeping into the fragment first.
 
 ## 5. Set the editor font
 

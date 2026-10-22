@@ -9,7 +9,8 @@
 # an id (deep-contrast-dark) or the full name. the default is deep-dark.
 #
 # the values live in prefs/, which apply.ps1 reads too, so no value is written
-# out in more than one place.
+# out in more than one place. nothing is backed up: the repo holds every value
+# it writes. every key it does not track is left as it was.
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -69,17 +70,6 @@ if [ ! -d "$workspace/.metadata" ]; then
 fi
 
 mkdir -p "$settings"
-backup="$settings.backup-$(date +%Y%m%d-%H%M%S)"
-# two runs inside one second would otherwise copy the folder into the first
-# backup instead of beside it
-n=1
-while [ -e "$backup" ]; do
-  backup="$settings.backup-$(date +%Y%m%d-%H%M%S)-$n"
-  n=$((n + 1))
-done
-cp -R "$settings" "$backup"
-echo "Backed up $settings"
-echo "       to $backup"
 
 # merge_file <fragment> <target>: replaces or appends each key=value line from
 # the fragment and leaves every other line of the target alone. awk reads both
