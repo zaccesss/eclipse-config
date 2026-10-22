@@ -23,6 +23,28 @@ all of that, so this repo holds only the chosen keys and merges them in.
   picks another and `--no-theme` (`-NoTheme`) skips it.
 - [`plugins.txt`](plugins.txt) - suggested plugins with their update sites.
 
+## In action
+
+Eclipse IDE in each of the eight Zacess themes, with the same file open.
+
+| Deep Contrast Dark | Deep Contrast Light |
+| --- | --- |
+| ![Eclipse IDE in Zacess Deep Contrast Dark (black background) with Queue.java, a ring buffer queue class, open between the Package Explorer and the Outline view](docs/demo/eclipse-deep-contrast-dark.webp) | ![Eclipse IDE in Zacess Deep Contrast Light (white background) with Queue.java, a ring buffer queue class, open between the Package Explorer and the Outline view](docs/demo/eclipse-deep-contrast-light.webp) |
+
+| Yellow on Black | Cream |
+| --- | --- |
+| ![Eclipse IDE in Zacess Yellow on Black (yellow and white text on black) with Queue.java, a ring buffer queue class, open between the Package Explorer and the Outline view](docs/demo/eclipse-yellow-on-black.webp) | ![Eclipse IDE in Zacess Cream (cream background) with Queue.java, a ring buffer queue class, open between the Package Explorer and the Outline view](docs/demo/eclipse-cream.webp) |
+
+| Dark | Light |
+| --- | --- |
+| ![Eclipse IDE in Zacess Dark (dark background) with Queue.java, a ring buffer queue class, open between the Package Explorer and the Outline view](docs/demo/eclipse-dark.webp) | ![Eclipse IDE in Zacess Light (light background) with Queue.java, a ring buffer queue class, open between the Package Explorer and the Outline view](docs/demo/eclipse-light.webp) |
+
+| High Contrast Dark | High Contrast Light |
+| --- | --- |
+| ![Eclipse IDE in Zacess High Contrast Dark (black background) with Queue.java, a ring buffer queue class, open between the Package Explorer and the Outline view](docs/demo/eclipse-high-contrast-dark.webp) | ![Eclipse IDE in Zacess High Contrast Light (white background) with Queue.java, a ring buffer queue class, open between the Package Explorer and the Outline view](docs/demo/eclipse-high-contrast-light.webp) |
+
+The themes are from [Zacess Themes](https://github.com/zacesshq/themes).
+
 ## Setup
 
 Full walkthrough, including the JDK, in [guides/setup.md](guides/setup.md). In short, quit Eclipse
@@ -44,3 +66,4 @@ git clone https://github.com/zaccesss/eclipse-config.git ~/.eclipse-config-src
 | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | Font size, autosave, spell checking and the key bindings |
 | [`prefs/`](prefs/) | Merged into `<workspace>/.metadata/.plugins/org.eclipse.core.runtime/.settings/` |
 | [`guides/`](guides/) | Setup walkthrough and the preferences and key binding reference |
+| [`docs/demo/`](docs/demo/) | Screenshots of the editor in the Zacess themes |
