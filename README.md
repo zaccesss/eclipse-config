@@ -12,9 +12,8 @@ all of that, so this repo holds only the chosen keys and merges them in.
 - [`prefs/`](prefs/) - the preferences, one fragment per Eclipse `.prefs` file: Java 25 compiler
   compliance, autosave every 20 seconds, line numbers, spaces for tabs at width 4, current line
   highlight, spell checking in British English and 15 key bindings. Identical on every platform.
-- [`apply.sh`](apply.sh) (macOS and Linux) and [`apply.ps1`](apply.ps1) (Windows) - back up the
-  workspace's settings folder, merge the fragments and the chosen theme in key by key and print
-  what changed. The Windows script also lists PowerShell 7 in the Terminal view. Both refuse to run
+- [`apply.sh`](apply.sh) (macOS and Linux) and [`apply.ps1`](apply.ps1) (Windows) - merge the
+  fragments and the chosen theme in key by key and print what changed, with no backup. The Windows script also lists PowerShell 7 in the Terminal view. Both refuse to run
   while Eclipse is open.
 - [`theme/`](theme/) - the eight Zacess Eclipse themes from
   [Zacess Themes](https://github.com/zacesshq/themes) 0.3.0 (editor and Terminal view colours), tab

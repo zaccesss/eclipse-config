@@ -3,7 +3,8 @@
 #   (the workspace defaults to %USERPROFILE%\eclipse-workspace)
 #
 # the values live in prefs\, the same files apply.sh reads, so no value is
-# written out in more than one place.
+# written out in more than one place. nothing is backed up: the repo holds
+# every value it writes. every key it does not track is left as it was.
 #
 # -Theme imports one of the eight Zacess themes from theme\ (editor
 # and Terminal view colours, plus the tab outlines for the two Deep Contrast
@@ -60,16 +61,6 @@ if (-not (Test-Path (Join-Path $Workspace '.metadata') -PathType Container)) {
 }
 
 New-Item -ItemType Directory -Force $settings | Out-Null
-$stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$backup = "$settings.backup-$stamp"
-$n = 1
-while (Test-Path $backup) {
-    $backup = "$settings.backup-$stamp-$n"
-    $n++
-}
-Copy-Item -Recurse $settings $backup
-Write-Output "Backed up $settings"
-Write-Output "       to $backup"
 
 function Get-PrefKey([string]$line) {
     $i = $line.IndexOf('=')
@@ -181,10 +172,6 @@ foreach ($group in $groups.Values) {
 if ($hasPwsh) {
     Write-Output '  unchanged  Terminal view  PowerShell 7'
 } else {
-    if ($current.Count -gt 0) {
-        Copy-Item $dataFile "$dataFile.backup-$stamp"
-        Write-Output "Backed up $dataFile"
-    }
     $lines = [Collections.Generic.List[string]]::new()
     foreach ($line in $other) { $lines.Add($line) }
     $shells = @($pwshEntry) + @($groups.Values)
