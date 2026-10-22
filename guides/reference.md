@@ -41,7 +41,7 @@ Each fragment in [`prefs/`](../prefs/) is named after the file it merges into. L
 | `SAVE_AUTOMATICALLY_INTERVAL` | `20` | Every 20 seconds, so a crash or a closed lid loses very little. |
 | `org.eclipse.ui.commands` | the key binding XML | The 15 user key bindings below. Eclipse stores every user binding in this one value, so it is merged as a whole. |
 
-The editor font is left out on purpose. Eclipse stores a font as a string that ends in the windowing system (`COCOA` on macOS, for example) and a native font name, so one string cannot serve every platform. Set it once by hand, see [setup.md](setup.md#5-set-the-editor-font).
+The editor font is left out on purpose. Eclipse stores a font as a string that ends in the windowing system (`COCOA` on macOS, for example) and a native font name, so one string cannot serve every platform. Set it once by hand, see [setup.md](setup.md#5-set-the-editor-font). The same goes for the Terminal view font, where a Nerd Font such as GeistMono Nerd Font draws prompt symbols.
 
 ## Key bindings
 

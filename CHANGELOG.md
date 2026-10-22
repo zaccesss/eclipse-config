@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.0.1] - 2026-10-22
+
+### Changed
+
+- The setup guide's font step covers the Terminal view font too, with GeistMono Nerd Font (free, from the Nerd Fonts releases) as a choice that draws prompt symbols. The scripts still leave fonts alone, since Eclipse stores them in a platform-specific form.
+
 ### Fixed
 
 - `apply.ps1` merges PowerShell 7 into the Terminal view's list of local shells instead of replacing the list. Existing shells keep every field and move down one place behind it. A list that already has PowerShell 7 is left alone

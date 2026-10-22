@@ -98,6 +98,12 @@ The scripts leave the font alone, since Eclipse stores it in a platform-specific
 
 The Java editor font follows **Text Font** unless it has been changed on its own.
 
+The Terminal view has its own font. A Nerd Font makes the symbols a themed prompt uses (branch,
+status and battery icons) draw there. GeistMono Nerd Font is a free choice under the SIL Open Font
+License, from the [Nerd Fonts releases](https://github.com/ryanoasis/nerd-fonts/releases). Install
+it, then in the same **Colors and Fonts** page expand **Terminal**, select **Terminal Console Font**
+and pick it.
+
 ## 6. Pick the default JRE
 
 Open **Java > Installed JREs** in the preferences. Tick the Temurin 25 entry. If it is missing,
